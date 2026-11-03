@@ -1,0 +1,6 @@
+# Arquivos gerados pelo Qt Creator e pela compilacao
+*.pro.user*
+.qtcreator/
+build/
+build-*/
+README.md
