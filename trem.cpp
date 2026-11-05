@@ -14,7 +14,6 @@ Trem::Trem(int numero, Malha *rede, QObject *parent)
     : QThread(parent), id(numero), malha(rede), velocidade(80), executando(1) {
     for (int i = 0; i < 9; ++i) reservadas[i] = false;
     // Coordenadas sao centros dos trens; cada trajeto e anti-horario.
-    // Os pontos de reserva ficam a pelo menos 30 pixels dos cruzamentos.
     switch (id) {
     case 0: // a: regioes 1 e 2
         regioes << 0 << 1;
@@ -55,9 +54,8 @@ Trem::Trem(int numero, Malha *rede, QObject *parent)
 void Trem::definirVelocidade(int valor) { velocidade.storeRelease(qBound(0, valor, 200)); }
 void Trem::encerrar() { executando.storeRelease(0); }
 
-// A reserva e tentativa: se faltar qualquer regiao, devolvemos imediatamente
-// todas as anteriores. Assim nenhum trem espera segurando uma reserva parcial,
-// eliminando espera circular. Outros trens continuam tentando em suas threads.
+
+//eliminando espera circular. Outros trens continuam tentando em suas threads.
 bool Trem::reservar() {
     while (executando.loadAcquire()) {
         if (velocidade.loadAcquire() == 0) { msleep(10); continue; }
@@ -68,7 +66,7 @@ bool Trem::reservar() {
             return true;
         }
         while (obtidos > 0) malha->regioes[regioes[--obtidos]].release();
-        msleep(2 + id); // reduz disputas repetidas entre as threads
+        msleep(2 + id); //reduz disputas repetidas entre as threads
     }
     return false;
 }
@@ -98,7 +96,7 @@ void Trem::run() {
             destino = (destino + 1) % percurso.size();
             if (destino == 0) destino = 1;
         }
-        // 200 corresponde a 1 ms por passo; 0 interrompe o movimento.
+        // 200 corresponde a 1 ms por passo; 0 interrompe o movimento
         msleep(static_cast<unsigned long>(1 + (200 - v) * (200 - v) / 400));
     }
     liberarTodas();

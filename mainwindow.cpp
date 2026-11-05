@@ -27,6 +27,7 @@ protected:
         p.drawRect(300,140,150,120); p.drawRect(75,260,150,120);
         p.drawRect(225,260,150,120); p.drawRect(375,260,150,120);
         const QColor cores[] = { QColor("#dc2626"), QColor("#ea580c"), QColor("#7c3aed"), QColor("#0891b2"), QColor("#16a34a"), QColor("#be185d") };
+
         for (int i = 0; i < 6; ++i) {
             QRect r(posicoes[i].x()-11,posicoes[i].y()-11,22,22);
             p.setPen(QPen(Qt::white, 2)); p.setBrush(cores[i]); p.drawRoundedRect(r, 4, 4);
@@ -44,9 +45,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     QWidget *central = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(central);
     desenho = new MalhaWidget(central);
+
     layout->addWidget(desenho, 1);
     QGroupBox *grupo = new QGroupBox(QString::fromUtf8("Controle de velocidade"), central);
     QGridLayout *grade = new QGridLayout(grupo);
+
     for (int i = 0; i < 6; ++i) {
         QLabel *nome = new QLabel(QString(QChar('a'+i)), grupo);
         controles[i] = new QSlider(Qt::Horizontal, grupo);
@@ -60,16 +63,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         connect(controles[i], &QSlider::valueChanged, trens[i], &Trem::definirVelocidade);
         connect(controles[i], &QSlider::valueChanged, valor, qOverload<int>(&QLabel::setNum));
     }
+
     QSlider *mestre = new QSlider(Qt::Horizontal, grupo);
     mestre->setRange(0,200); mestre->setValue(80);
     QLabel *valorMestre = new QLabel("80", grupo);
     grade->addWidget(new QLabel(QString::fromUtf8("m (geral)"), grupo),2,0);
     grade->addWidget(mestre,2,1,1,7); grade->addWidget(valorMestre,2,8);
     connect(mestre, &QSlider::valueChanged, valorMestre, qOverload<int>(&QLabel::setNum));
+
     for (int i = 0; i < 6; ++i) connect(mestre, &QSlider::valueChanged, controles[i], &QSlider::setValue);
     layout->addWidget(grupo);
     setCentralWidget(central);
     resize(760,620);
+
     for (int i = 0; i < 6; ++i) trens[i]->start();
 }
 void MainWindow::updateInterface(int id, int x, int y) { if (id >= 0 && id < 6) desenho->atualizar(id,x,y); }
