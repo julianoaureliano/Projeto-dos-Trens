@@ -23,15 +23,17 @@ public:
 signals:
     void updateGUI(int id, int x, int y);
 private:
-    struct Ponto { QPoint pos; int acao; }; // 1: reservar; -1: liberar
+    struct Ponto { QPoint pos; int acao; }; // 1: reservar; 10..18: liberar regiao
     void adicionar(int x, int y, int acao = 0);
     bool reservar();
-    void liberar();
+    void liberar(int regiao);
+    void liberarTodas();
     int id;
     Malha *malha;
     QAtomicInt velocidade;
     QAtomicInt executando;
     QVector<int> regioes;
+    bool reservadas[9];
     QVector<Ponto> percurso;
 };
 #endif
